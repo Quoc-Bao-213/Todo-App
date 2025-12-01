@@ -1,5 +1,10 @@
-import { ResponsiveModal } from "@/components/responsive-modal";
+import z from "zod";
+import { useForm } from "react-hook-form";
+import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { ResponsiveModal } from "@/components/responsive-modal";
 import {
   Form,
   FormControl,
@@ -8,11 +13,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import z from "zod";
 
 interface AddTaskModalProps {
   open: boolean;

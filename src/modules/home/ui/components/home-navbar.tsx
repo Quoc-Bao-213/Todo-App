@@ -1,18 +1,10 @@
 "use client";
 
+import { useState } from "react";
+import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-// import { Button } from "@/components/ui/button";
-// import {
-//   Dialog,
-//   DialogContent,
-//   DialogHeader,
-//   DialogTitle,
-//   DialogTrigger,
-// } from "@/components/ui/dialog";
 import { AuthButton } from "@/modules/auth/ui/components/auth-button";
 import { AddTaskModal } from "@/modules/tasks/ui/components/add-task-modal";
-import { Plus } from "lucide-react";
-import { useState } from "react";
 
 export const HomeNavbar = () => {
   const [isOpenAddTaskModal, setIsOpenAddTaskModal] = useState(false);
