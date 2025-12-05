@@ -1,64 +1,48 @@
-"use client";
-
-import { useState } from "react";
+import { cn } from "@/lib/utils";
 import { format } from "date-fns";
-import { Trash2, Pencil, MoreVertical } from "lucide-react";
-import { Todo } from "@/hooks/use-todos";
 import { Button } from "@/components/ui/button";
+import { TodoGetManyOutput } from "../../types";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent } from "@/components/ui/card";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { MoreVertical, Pencil, Trash2 } from "lucide-react";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { TodoForm } from "./todo-form";
-import { cn } from "@/lib/utils";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface TodoItemProps {
-  todo: Todo;
-  onToggle: (id: string) => void;
-  onDelete: (id: string) => void;
-  onUpdate: (id: string, updates: Partial<Todo>) => void;
+  todo: TodoGetManyOutput["items"][number];
 }
 
-export function TodoItem({
-  todo,
-  onToggle,
-  onDelete,
-  onUpdate,
-}: TodoItemProps) {
-  const [isEditing, setIsEditing] = useState(false);
-  const [isDetailOpen, setIsDetailOpen] = useState(false);
-
-  const handleUpdate = (values: { text: string; description?: string }) => {
-    onUpdate(todo.id, values);
-    setIsEditing(false);
-  };
+export const TodoItem = ({ todo }: TodoItemProps) => {
+  //   const [isDetailOpen, setIsDetailOpen] = useState(false);
 
   return (
     <>
       <Card className="group hover:shadow-md transition-all duration-200 border-l-4 border-l-transparent hover:border-l-primary">
         <CardContent className="p-4 flex items-start gap-3">
           <Checkbox
-            checked={todo.completed}
-            onCheckedChange={() => onToggle(todo.id)}
+            // checked={todo.completed}
+            checked={false}
+            onCheckedChange={() => {}}
             className="mt-1"
           />
           <div className="flex-1 min-w-0">
             <div
               className={cn(
                 "font-medium text-base truncate cursor-pointer",
-                todo.completed && "text-muted-foreground line-through"
+                // todo.completed && "text-muted-foreground line-through"
+                false && "text-muted-foreground line-through"
               )}
-              onClick={() => setIsDetailOpen(true)}
+              onClick={() => {}}
             >
               {todo.text}
             </div>
@@ -80,16 +64,16 @@ export function TodoItem({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => setIsDetailOpen(true)}>
+              <DropdownMenuItem onClick={() => {}}>
                 View Details
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setIsEditing(true)}>
+              <DropdownMenuItem onClick={() => {}}>
                 <Pencil className="mr-2 h-4 w-4" />
                 Edit
               </DropdownMenuItem>
               <DropdownMenuItem
                 className="text-destructive focus:text-destructive"
-                onClick={() => onDelete(todo.id)}
+                onClick={() => {}}
               >
                 <Trash2 className="mr-2 h-4 w-4" />
                 Delete
@@ -100,7 +84,7 @@ export function TodoItem({
       </Card>
 
       {/* Edit Dialog */}
-      <Dialog open={isEditing} onOpenChange={setIsEditing}>
+      {/* <Dialog open={isEditing} onOpenChange={setIsEditing}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Edit Todo</DialogTitle>
@@ -114,10 +98,10 @@ export function TodoItem({
             submitLabel="Save Changes"
           />
         </DialogContent>
-      </Dialog>
+      </Dialog> */}
 
       {/* Detail Dialog */}
-      <Dialog open={isDetailOpen} onOpenChange={setIsDetailOpen}>
+      {/* <Dialog open={isDetailOpen} onOpenChange={setIsDetailOpen}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Todo Details</DialogTitle>
@@ -160,7 +144,7 @@ export function TodoItem({
             </div>
           </div>
         </DialogContent>
-      </Dialog>
+      </Dialog> */}
     </>
   );
-}
+};

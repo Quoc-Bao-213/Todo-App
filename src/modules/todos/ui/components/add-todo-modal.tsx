@@ -13,8 +13,10 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { trpc } from "@/trpc/client";
+import { toast } from "sonner";
 
-interface AddTaskModalProps {
+interface AddTodoModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
@@ -24,7 +26,7 @@ const formSchema = z.object({
   description: z.string().trim().optional(),
 });
 
-export const AddTaskModal = ({ open, onOpenChange }: AddTaskModalProps) => {
+export const AddTodoModal = ({ open, onOpenChange }: AddTodoModalProps) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -32,14 +34,27 @@ export const AddTaskModal = ({ open, onOpenChange }: AddTaskModalProps) => {
     },
   });
 
+  const utils = trpc.useUtils();
+
+  const create = trpc.todos.create.useMutation({
+    onSuccess: () => {
+      toast.success("Todo created successfully");
+      utils.todos.getMany.invalidate();
+      form.reset();
+      onOpenChange(false);
+    },
+    onError: () => {
+      toast.error("Something went wrong");
+    },
+  });
+
   const onSubmit = (values: z.infer<typeof formSchema>) => {
-    // create.mutate(values);
-    console.log("values", values);
+    create.mutate(values);
   };
 
   return (
     <ResponsiveModal
-      title="Create new task"
+      title="Create new todo"
       open={open}
       onOpenChange={onOpenChange}
     >
@@ -86,7 +101,7 @@ export const AddTaskModal = ({ open, onOpenChange }: AddTaskModalProps) => {
             <Button
               type="submit"
               className="cursor-pointer"
-              //   disabled={create.isPending}
+              disabled={create.isPending}
             >
               Create
             </Button>
