@@ -20,7 +20,7 @@ export default function RootLayout({
   return (
     <ClerkProvider afterSignOutUrl="/sign-in">
       <html lang="en">
-        <body className={inter.className}>
+        <body className={inter.className} suppressHydrationWarning>
           <TRPCProvider>
             <Toaster />
             {children}
