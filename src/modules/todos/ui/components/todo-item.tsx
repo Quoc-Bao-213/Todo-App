@@ -1,26 +1,21 @@
+import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { format } from "date-fns";
-import { toast } from "sonner";
 import { trpc } from "@/trpc/client";
 import { Button } from "@/components/ui/button";
 import { TodoGetManyOutput } from "../../types";
+import { EditTodoModal } from "./edit-todo-modal";
 import { Checkbox } from "@/components/ui/checkbox";
+import { TodoDetailModal } from "./todo-detail-modal";
 import { Card, CardContent } from "@/components/ui/card";
 import { InfoIcon, MoreVertical, Pencil, Trash2 } from "lucide-react";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { EditTodoModal } from "./edit-todo-modal";
 
 interface TodoItemProps {
   todo: TodoGetManyOutput["items"][number];
@@ -133,52 +128,14 @@ export const TodoItem = ({ todo }: TodoItemProps) => {
         </CardContent>
       </Card>
 
-      {/* Detail Dialog */}
-      <Dialog open={isDetailOpen} onOpenChange={setIsDetailOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Todo Details</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div>
-              <h3 className="font-semibold text-lg">{todo.text}</h3>
-              <div className="text-sm text-muted-foreground">
-                Created on {format(todo.createdAt, "PPP p")}
-              </div>
-            </div>
-            {todo.description ? (
-              <div className="bg-muted/50 p-4 rounded-md text-sm whitespace-pre-wrap">
-                {todo.description}
-              </div>
-            ) : (
-              <div className="text-sm text-muted-foreground italic">
-                No description provided.
-              </div>
-            )}
-            <div className="flex justify-end gap-2 pt-4">
-              <Button
-                variant={todo.completed ? "outline" : "default"}
-                onClick={() => {
-                  handleToggleComplete();
-                  setIsDetailOpen(false);
-                }}
-                disabled={updateTodo.isPending}
-              >
-                {todo.completed ? "Mark as Incomplete" : "Mark as Complete"}
-              </Button>
-              <Button
-                variant="outline"
-                onClick={() => {
-                  setIsDetailOpen(false);
-                  setIsEditOpen(true);
-                }}
-              >
-                Edit
-              </Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
+      <TodoDetailModal
+        open={isDetailOpen}
+        onOpenChange={setIsDetailOpen}
+        todo={todo}
+        onToggleComplete={handleToggleComplete}
+        onEdit={() => setIsEditOpen(true)}
+        isUpdating={updateTodo.isPending}
+      />
     </>
   );
 };
