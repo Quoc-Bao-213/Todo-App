@@ -1,6 +1,8 @@
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { format } from "date-fns";
+import { toast } from "sonner";
+import { trpc } from "@/trpc/client";
 import { Button } from "@/components/ui/button";
 import { TodoGetManyOutput } from "../../types";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -27,6 +29,40 @@ interface TodoItemProps {
 export const TodoItem = ({ todo }: TodoItemProps) => {
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
+  const utils = trpc.useUtils();
+
+  const updateTodo = trpc.todos.update.useMutation({
+    onSuccess: () => {
+      toast.success("Todo updated successfully");
+      utils.todos.getMany.invalidate();
+    },
+    onError: () => {
+      toast.error("Failed to update todo");
+    },
+  });
+
+  const deleteTodo = trpc.todos.delete.useMutation({
+    onSuccess: () => {
+      toast.success("Todo deleted successfully");
+      utils.todos.getMany.invalidate();
+    },
+    onError: () => {
+      toast.error("Failed to delete todo");
+    },
+  });
+
+  const handleToggleComplete = () => {
+    updateTodo.mutate({
+      id: todo.id,
+      text: todo.text,
+      description: todo.description || undefined,
+      completed: !todo.completed,
+    });
+  };
+
+  const handleDelete = () => {
+    deleteTodo.mutate({ id: todo.id });
+  };
 
   return (
     <>
@@ -41,8 +77,9 @@ export const TodoItem = ({ todo }: TodoItemProps) => {
         <CardContent className="p-4 flex items-start gap-3">
           <Checkbox
             checked={todo.completed}
-            onCheckedChange={() => {}}
+            onCheckedChange={handleToggleComplete}
             className="mt-1 cursor-pointer"
+            disabled={updateTodo.isPending}
           />
 
           <div className="flex-1 min-w-0">
@@ -85,7 +122,8 @@ export const TodoItem = ({ todo }: TodoItemProps) => {
               </DropdownMenuItem>
               <DropdownMenuItem
                 className="text-destructive focus:text-destructive"
-                onClick={() => {}}
+                onClick={handleDelete}
+                disabled={deleteTodo.isPending}
               >
                 <Trash2 className="mr-2 h-4 w-4" />
                 Delete
@@ -121,9 +159,10 @@ export const TodoItem = ({ todo }: TodoItemProps) => {
               <Button
                 variant={todo.completed ? "outline" : "default"}
                 onClick={() => {
-                  //   onToggle(todo.id);
+                  handleToggleComplete();
                   setIsDetailOpen(false);
                 }}
+                disabled={updateTodo.isPending}
               >
                 {todo.completed ? "Mark as Incomplete" : "Mark as Complete"}
               </Button>
