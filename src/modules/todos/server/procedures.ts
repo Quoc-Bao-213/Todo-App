@@ -1,6 +1,6 @@
 import z from "zod";
 import { db } from "@/db";
-import { tasks } from "@/db/schema";
+import { todos } from "@/db/schema";
 import { createTRPCRouter, protectedProcedure } from "@/trpc/init";
 import { and, desc, eq, lt, or } from "drizzle-orm";
 
@@ -23,22 +23,22 @@ export const todosRouter = createTRPCRouter({
 
       const data = await db
         .select()
-        .from(tasks)
+        .from(todos)
         .where(
           and(
-            eq(tasks.userId, userId),
+            eq(todos.userId, userId),
             cursor
               ? or(
-                  lt(tasks.updatedAt, cursor.updatedAt),
+                  lt(todos.updatedAt, cursor.updatedAt),
                   and(
-                    eq(tasks.updatedAt, cursor.updatedAt),
-                    lt(tasks.id, cursor.id)
+                    eq(todos.updatedAt, cursor.updatedAt),
+                    lt(todos.id, cursor.id)
                   )
                 )
               : undefined
           )
         )
-        .orderBy(desc(tasks.updatedAt), desc(tasks.id))
+        .orderBy(desc(todos.updatedAt), desc(todos.id))
         .limit(limit + 1);
 
       const hasMore = data.length > limit;
@@ -178,8 +178,8 @@ export const todosRouter = createTRPCRouter({
       const { id: userId } = ctx.user;
       const { text, description } = input;
 
-      const [createdTask] = await db
-        .insert(tasks)
+      const [createdTodo] = await db
+        .insert(todos)
         .values({
           userId,
           text,
@@ -187,6 +187,6 @@ export const todosRouter = createTRPCRouter({
         })
         .returning();
 
-      return createdTask;
+      return createdTodo;
     }),
 });

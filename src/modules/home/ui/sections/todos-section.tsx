@@ -6,7 +6,7 @@ import { InfiniteScroll } from "@/components/infinite-scroll";
 import { TodoItem } from "@/modules/todos/ui/components/todo-item";
 
 export const TodosSection = () => {
-  const [tasks, query] = trpc.todos.getMany.useSuspenseInfiniteQuery(
+  const [todos, query] = trpc.todos.getMany.useSuspenseInfiniteQuery(
     { limit: DEFAULT_LIMIT },
     { getNextPageParam: (lastPage) => lastPage.nextCursor }
   );
@@ -14,10 +14,10 @@ export const TodosSection = () => {
   return (
     <>
       <div className="space-y-4 pb-10">
-        {tasks.pages
+        {todos.pages
           .flatMap((page) => page.items)
-          .map((task) => (
-            <TodoItem key={task.id} todo={task} />
+          .map((todo) => (
+            <TodoItem key={todo.id} todo={todo} />
           ))}
       </div>
       <InfiniteScroll

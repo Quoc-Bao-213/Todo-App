@@ -3,7 +3,7 @@ import { relations } from "drizzle-orm";
 import { pgTable } from "drizzle-orm/pg-core";
 import { uuid, text, timestamp } from "drizzle-orm/pg-core";
 
-export const tasks = pgTable("tasks", {
+export const todos = pgTable("todos", {
   id: uuid("id").primaryKey().defaultRandom(),
   userId: uuid("user_id")
     .references(() => users.id, { onDelete: "cascade" })
@@ -14,6 +14,6 @@ export const tasks = pgTable("tasks", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
-export const taskRelations = relations(tasks, ({ one }) => ({
-  user: one(users, { fields: [tasks.userId], references: [users.id] }),
+export const todoRelations = relations(todos, ({ one }) => ({
+  user: one(users, { fields: [todos.userId], references: [users.id] }),
 }));
