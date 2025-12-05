@@ -18,16 +18,25 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { EditTodoModal } from "./edit-todo-modal";
 
 interface TodoItemProps {
   todo: TodoGetManyOutput["items"][number];
 }
 
 export const TodoItem = ({ todo }: TodoItemProps) => {
+  const [isEditOpen, setIsEditOpen] = useState(false);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
 
   return (
     <>
+      <EditTodoModal
+        open={isEditOpen}
+        onOpenChange={setIsEditOpen}
+        todoId={todo.id}
+        todo={todo}
+      />
+
       <Card className="group hover:shadow-md transition-all duration-200 border-l-4 border-l-transparent hover:border-l-primary">
         <CardContent className="p-4 flex items-start gap-3">
           <Checkbox
@@ -35,21 +44,24 @@ export const TodoItem = ({ todo }: TodoItemProps) => {
             onCheckedChange={() => {}}
             className="mt-1 cursor-pointer"
           />
+
           <div className="flex-1 min-w-0">
             <div
               className={cn(
                 "font-medium text-base truncate cursor-pointer",
                 todo.completed && "text-muted-foreground line-through"
               )}
-              onClick={() => {}}
+              onClick={() => setIsDetailOpen(true)}
             >
               {todo.text}
             </div>
+
             {todo.description && (
               <p className="text-sm text-muted-foreground line-clamp-1 mt-1">
                 {todo.description}
               </p>
             )}
+
             <div className="text-xs text-muted-foreground mt-2">
               {format(todo.createdAt, "PP p")}
             </div>
@@ -67,7 +79,7 @@ export const TodoItem = ({ todo }: TodoItemProps) => {
                 <InfoIcon className="mr-2 h-4 w-4" />
                 View Details
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => {}}>
+              <DropdownMenuItem onClick={() => setIsEditOpen(true)}>
                 <Pencil className="mr-2 h-4 w-4" />
                 Edit
               </DropdownMenuItem>
@@ -82,23 +94,6 @@ export const TodoItem = ({ todo }: TodoItemProps) => {
           </DropdownMenu>
         </CardContent>
       </Card>
-
-      {/* Edit Dialog */}
-      {/* <Dialog open={isEditing} onOpenChange={setIsEditing}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Edit Todo</DialogTitle>
-          </DialogHeader>
-          <TodoForm
-            defaultValues={{
-              text: todo.text,
-              description: todo.description,
-            }}
-            onSubmit={handleUpdate}
-            submitLabel="Save Changes"
-          />
-        </DialogContent>
-      </Dialog> */}
 
       {/* Detail Dialog */}
       <Dialog open={isDetailOpen} onOpenChange={setIsDetailOpen}>
@@ -136,7 +131,7 @@ export const TodoItem = ({ todo }: TodoItemProps) => {
                 variant="outline"
                 onClick={() => {
                   setIsDetailOpen(false);
-                  //   setIsEditing(true);
+                  setIsEditOpen(true);
                 }}
               >
                 Edit

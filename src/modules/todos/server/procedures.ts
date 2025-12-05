@@ -2,6 +2,7 @@ import z from "zod";
 import { db } from "@/db";
 import { todos } from "@/db/schema";
 import { createTRPCRouter, protectedProcedure } from "@/trpc/init";
+import { TRPCError } from "@trpc/server";
 import { and, desc, eq, lt, or } from "drizzle-orm";
 
 export const todosRouter = createTRPCRouter({
@@ -145,33 +146,36 @@ export const todosRouter = createTRPCRouter({
 
   //       return removedVideo;
   //     }),
-  //   update: protectedProcedure
-  //     .input(videoUpdateSchema)
-  //     .mutation(async ({ ctx, input }) => {
-  //       const { id: userId } = ctx.user;
+  update: protectedProcedure
+    .input(
+      z.object({
+        id: z.uuid(),
+        text: z.string().trim().min(1, "Todo text is required"),
+        description: z.string().trim().optional(),
+        completed: z.boolean().optional(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { id: userId } = ctx.user;
+      const { id, text, description, completed } = input;
 
-  //       if (!input.id) {
-  //         throw new TRPCError({ code: "BAD_REQUEST" });
-  //       }
+      const [updatedTodo] = await db
+        .update(todos)
+        .set({
+          text,
+          description,
+          completed,
+          updatedAt: new Date(),
+        })
+        .where(and(eq(todos.id, id), eq(todos.userId, userId)))
+        .returning();
 
-  //       const [updatedVideo] = await db
-  //         .update(videos)
-  //         .set({
-  //           title: input.title,
-  //           description: input.description,
-  //           categoryId: input.categoryId,
-  //           visibility: input.visibility,
-  //           updatedAt: new Date(),
-  //         })
-  //         .where(and(eq(videos.id, input.id), eq(videos.userId, userId)))
-  //         .returning();
+      if (!updatedTodo) {
+        throw new TRPCError({ code: "NOT_FOUND" });
+      }
 
-  //       if (!updatedVideo) {
-  //         throw new TRPCError({ code: "NOT_FOUND" });
-  //       }
-
-  //       return updatedVideo;
-  //     }),
+      return updatedTodo;
+    }),
   create: protectedProcedure
     .input(z.object({ text: z.string(), description: z.string().optional() }))
     .mutation(async ({ ctx, input }) => {
