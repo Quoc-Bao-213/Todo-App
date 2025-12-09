@@ -50,6 +50,7 @@ export const TodoDetailModal = ({
               onOpenChange(false);
             }}
             disabled={isUpdating}
+            className="cursor-pointer"
           >
             {todo.completed ? "Mark as Incomplete" : "Mark as Complete"}
           </Button>
@@ -59,6 +60,7 @@ export const TodoDetailModal = ({
               onOpenChange(false);
               onEdit();
             }}
+            className="cursor-pointer"
           >
             Edit
           </Button>
